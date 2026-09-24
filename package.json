@@ -1,0 +1,28 @@
+{
+  "name": "threejs-mediapipe-vr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/echao-03/threejs-mediapipe-VR.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/echao-03/threejs-mediapipe-VR/issues"
+  },
+  "homepage": "https://github.com/echao-03/threejs-mediapipe-VR#readme",
+  "dependencies": {
+    "three": "^0.186.0",
+    "@vitejs/plugin-basic-ssl": "^2.1.0",
+    "vite": "^8.3.0"
+  }
+}
