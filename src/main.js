@@ -1,18 +1,19 @@
 import * as THREE from "three";
 import { VRButton } from "three/addons/webxr/VRButton.js";
 import { XRHandModelFactory } from "three/addons/webxr/XRHandModelFactory.js";
+import { checkInteractionPinch } from "./handInteraction";
 
 const container = document.getElementById("app");
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-const orderedJoints = [
-    ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"],
-    ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"]
-    ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"]
-    ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"]
-    ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"]
-];
+// const orderedJoints = [
+//     ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"],
+//     ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"]
+//     ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"]
+//     ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"]
+//     ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"]
+// ];
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(container.clientWidth, container.clientHeight);
@@ -50,15 +51,21 @@ const vrButton = VRButton.createButton(renderer, {
 });
 document.body.appendChild(vrButton);
 
+const sphereGeo = new THREE.SphereGeometry(15, 32, 16);
+const sphereMat = new THREE.MeshBasicMaterial({ color: 'green' });
+const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+
+scene.add(sphere)
+
 
 
 function readHandTracking() {
     for (const hand of [leftHand, rightHand]) {
-        const indexTip = hand.joints["index-finger-tip"];
-
-        if (indexTip) {
-            console.log(indexTip.position);
+        const checkInt = checkInteractionPinch(hand);
+        if (checkInt) {
+            console.log("here");
         }
+
     }
 }
 
