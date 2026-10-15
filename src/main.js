@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { VRButton } from "three/addons/webxr/VRButton.js";
 import { XRHandModelFactory } from "three/addons/webxr/XRHandModelFactory.js";
 import { checkInteractionPinch } from "./handInteraction";
+import { distanceBetween } from "./helper";
 
 const container = document.getElementById("app");
 const scene = new THREE.Scene();
@@ -27,9 +28,19 @@ const VRCamera = new THREE.PerspectiveCamera(
     100,
 );
 
+const hemisphereLight = new THREE.HemisphereLight(
+    0xffffff, // sky color
+    0x444444, // ground color
+    1.5,
+);
+
 const light = new THREE.DirectionalLight(0xffffff);
-light.position.set(1, 1, -1).normalize();
-scene.add(light);
+light.position.set(2, 4, 2);
+scene.add(light, hemisphereLight);
+
+
+// TODO: Fix lighting so that it's easier to see environment
+
 
 VRCamera.position.set(0, 1.6, 3);
 
@@ -49,25 +60,47 @@ const vrButton = VRButton.createButton(renderer, {
     optionalFeatures: ["hand-tracking"]
 
 });
+// TODO: Change main HTML page to make seeing VR button easier
 document.body.appendChild(vrButton);
 
-const sphereGeo = new THREE.SphereGeometry(15, 32, 16);
+const mainPlaneGeo = new THREE.BoxGeometry(5, 0.5, 5);
+const mainPlaneMat = new THREE.MeshBasicMaterial({ color: "grey" });
+const mainPlane = new THREE.Mesh(mainPlaneGeo, mainPlaneMat);
+mainPlane.position.y = -0.5;
+scene.add(mainPlane);
+
+const sphereGeo = new THREE.SphereGeometry(0.10, 8, 16);
 const sphereMat = new THREE.MeshBasicMaterial({ color: 'green' });
 const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+sphere.position.set(0, 1, -0.5);
 
 scene.add(sphere)
+
+const indexTipPosition = new THREE.Vector3();
+
 
 
 
 function readHandTracking() {
     for (const hand of [leftHand, rightHand]) {
         const checkInt = checkInteractionPinch(hand);
+        const indexTip = hand.joints["index-finger-tip"];
+        const pinchDistance = distanceBetween(indexTip, sphere);
         if (checkInt) {
-            console.log("here");
+            if (pinchDistance <= 0.1) {
+
+                // TODO: Currently pinch hold is inconsistent, will just need to do pinch toggle
+
+                // Have to copy the world position of an object and place onto the desired object to move
+                indexTip.getWorldPosition(indexTipPosition);
+                sphere.position.copy(indexTipPosition);
+                sphere.material.color.set("red");
+            }
         }
 
     }
 }
+
 
 renderer.setAnimationLoop(() => {
     readHandTracking();
